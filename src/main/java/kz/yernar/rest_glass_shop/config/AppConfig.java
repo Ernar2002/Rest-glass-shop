@@ -40,12 +40,7 @@ public class AppConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(AUTH_ENDPOINT).permitAll()
-                .anyRequest().hasAuthority("USER")
-                .and()
-                .formLogin()
-                .loginPage("/api/auth/signin")
-                .usernameParameter("email")
-                .passwordParameter("password")
+                .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtUtil));
         http.headers().cacheControl();
