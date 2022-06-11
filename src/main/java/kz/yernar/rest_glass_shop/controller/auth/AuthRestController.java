@@ -68,27 +68,31 @@ public class AuthRestController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> login(@RequestBody SigninRequest request) {
-        String email = request.getEmail();
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, request.getPassword()));
-        User user = userService.findByEmail(email);
+        try {
+            String email = request.getEmail();
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, request.getPassword()));
+            User user = userService.findByEmail(email);
 
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
+            if (user == null) {
+                throw new UsernameNotFoundException("User not found");
+            }
+
+            String token = jwtUtil.createToken(user.getEmail());
+
+            List<String> roles = new ArrayList<>();
+
+            for (Role role : user.getRoles()
+            ) {
+                roles.add(role.getName());
+            }
+
+            return ResponseEntity.ok(new JwtResponse(token,
+                    user.getId(),
+                    user.getEmail(),
+                    roles));
+        } catch (AuthenticationException e){
+            return ResponseEntity.badRequest().body(new MessageResponse("Email or password is incorrect."));
         }
-
-        String token = jwtUtil.createToken(user.getEmail());
-
-        List<String> roles = new ArrayList<>();
-
-        for (Role role: user.getRoles()
-             ) {
-            roles.add(role.getName());
-        }
-
-        return ResponseEntity.ok(new JwtResponse(token,
-                user.getId(),
-                user.getEmail(),
-                roles));
     }
 
 }
