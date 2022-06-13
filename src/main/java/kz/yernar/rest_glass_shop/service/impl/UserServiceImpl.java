@@ -8,6 +8,7 @@ import kz.yernar.rest_glass_shop.repository.UserRepository;
 import kz.yernar.rest_glass_shop.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,8 +44,9 @@ public class UserServiceImpl implements UserService {
             user.setActive(EActive.ACTIVE);
         }
 
-        if(!user.getPassword().startsWith("$")) {
+        if(user.getResetPasswordToken()!=null) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setResetPasswordToken(null);
         }
 
         if(user.getCreated() == null) {
@@ -79,5 +81,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public void updateResetPasswordToken(String token, String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
+        if (user != null) {
+            user.setResetPasswordToken(token);
+            userRepository.save(user);
+        } else {
+            throw new UsernameNotFoundException("Could not find any user with the email " + email);
+        }
+    }
+
+    @Override
+    public User getByResetPasswordToken(String token) {
+        return userRepository.findByResetPasswordToken(token);
+    }
+
+    @Override
+    public void updatePassword(User user, String newPassword) {
+        user.setPassword(newPassword);
+        save(user);
     }
 }
