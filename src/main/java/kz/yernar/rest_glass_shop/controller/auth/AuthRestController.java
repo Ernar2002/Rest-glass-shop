@@ -7,6 +7,7 @@ import kz.yernar.rest_glass_shop.security.jwt.JwtUtil;
 import kz.yernar.rest_glass_shop.service.UserService;
 import kz.yernar.rest_glass_shop.utils.request.SigninRequest;
 import kz.yernar.rest_glass_shop.utils.request.SignupRequest;
+import kz.yernar.rest_glass_shop.utils.response.DefaultResponse;
 import kz.yernar.rest_glass_shop.utils.response.JwtResponse;
 import kz.yernar.rest_glass_shop.utils.response.MessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -35,12 +37,14 @@ public class AuthRestController {
     private final JwtUtil jwtUtil;
 
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AuthRestController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserService userService) {
+    public AuthRestController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserService userService, PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/signup")
@@ -92,6 +96,29 @@ public class AuthRestController {
                     roles));
         } catch (AuthenticationException e){
             return ResponseEntity.badRequest().body(new MessageResponse("Email or password is incorrect."));
+        }
+    }
+
+    @GetMapping("/login")
+    public DefaultResponse<User> login(@RequestParam String email, @RequestParam String password) {
+        User findUser = userService.findByEmail(email);
+
+        DefaultResponse<User> loginResponse = new DefaultResponse<User>();
+        if(findUser!=null){
+            if(passwordEncoder.matches(password, findUser.getPassword())){
+                loginResponse.setT(findUser);
+                loginResponse.setError(false);
+                return loginResponse;
+            } else {
+                loginResponse.setMessage("Invalid password");
+                loginResponse.setError(true);
+                return loginResponse;
+            }
+
+        } else {
+            loginResponse.setMessage("User not found");
+            loginResponse.setError(true);
+            return loginResponse;
         }
     }
 
