@@ -49,6 +49,10 @@ public class UserServiceImpl implements UserService {
             user.setResetPasswordToken(null);
         }
 
+        if(!user.getPassword().startsWith("$") && user.getResetPasswordToken()==null){
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+
         if(user.getCreated() == null) {
             Date date = new Date();
             user.setCreated(date);
