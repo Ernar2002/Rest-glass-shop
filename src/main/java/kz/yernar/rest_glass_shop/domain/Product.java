@@ -41,7 +41,7 @@ public class Product {
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "edge_treatment_id")
-    private EdgeTreatment edgeTreatment;
+    private EdgeTreatment edgeTreatment = new EdgeTreatment();
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "hole_id")
