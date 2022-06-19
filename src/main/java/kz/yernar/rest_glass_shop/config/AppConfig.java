@@ -21,6 +21,7 @@ import java.util.Properties;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class AppConfig extends WebSecurityConfigurerAdapter {
     private static final String AUTH_ENDPOINT = "/api/auth/**";
+    private static final String MOD_ENDPOINT = "/api/mod/**";
 
     private final JwtUtil jwtUtil;
 
@@ -62,6 +63,7 @@ public class AppConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(AUTH_ENDPOINT).permitAll()
+                .antMatchers(MOD_ENDPOINT).hasAnyRole("MODERATOR","ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtUtil));
