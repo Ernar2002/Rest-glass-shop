@@ -1,17 +1,18 @@
 package kz.yernar.rest_glass_shop.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "facet")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @ToString
+@NoArgsConstructor
 public class Facet {
 
     @Id
@@ -27,6 +28,7 @@ public class Facet {
     @Column(nullable = false)
     private double cost;
 
-    @OneToMany(mappedBy = "facet", cascade = CascadeType.ALL)
-    private List<Product> productList;
+    @OneToOne(mappedBy = "facet")
+    @JsonBackReference
+    private Product product;
 }
