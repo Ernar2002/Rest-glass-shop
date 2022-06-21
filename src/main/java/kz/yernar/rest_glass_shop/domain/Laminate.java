@@ -1,9 +1,12 @@
 package kz.yernar.rest_glass_shop.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "laminate")
@@ -23,6 +26,7 @@ public class Laminate {
     @Column(nullable = false)
     private double cost;
 
-    @OneToMany(mappedBy = "laminate", cascade = CascadeType.ALL)
-    private List<Product> productList;
+    @OneToOne(mappedBy = "laminate")
+    @JsonBackReference
+    private Product product;
 }

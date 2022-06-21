@@ -1,5 +1,6 @@
 package kz.yernar.rest_glass_shop.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
@@ -26,7 +27,7 @@ public class EdgeTreatment {
     @Column(nullable = false)
     private double cost;
 
-    @OneToMany(mappedBy = "edgeTreatment", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<Product> productSet = new HashSet<>();
+    @OneToOne(mappedBy = "edgeTreatment")
+    @JsonBackReference
+    private Product product;
 }
