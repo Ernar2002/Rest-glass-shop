@@ -5,13 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "facet")
-@Data
-@ToString
+@Getter @Setter
 @NoArgsConstructor
 public class Facet {
 
@@ -29,6 +26,6 @@ public class Facet {
     private double cost;
 
     @OneToOne(mappedBy = "facet")
-    @JsonBackReference
-    private Product product;
+    @JsonIgnore
+    private Order order;
 }

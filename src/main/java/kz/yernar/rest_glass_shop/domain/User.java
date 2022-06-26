@@ -1,5 +1,7 @@
 package kz.yernar.rest_glass_shop.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kz.yernar.rest_glass_shop.domain.enums.EActive;
@@ -10,6 +12,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -19,7 +22,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @ToString
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
     @Id
@@ -66,4 +68,15 @@ public class User {
     @JsonManagedReference
     @EqualsAndHashCode.Exclude
     private Set<Role> roles;
+
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            mappedBy = "user")
+//    @JsonBackReference(value = "user-order")
+    @EqualsAndHashCode.Exclude
+    private Set<Order> orders = new HashSet<>();
+
+    public void addOrder(Order order){
+        orders.add(order);
+    }
 }

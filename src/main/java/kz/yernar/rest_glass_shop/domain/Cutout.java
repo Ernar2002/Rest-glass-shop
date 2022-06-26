@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "cutout")
@@ -31,6 +29,7 @@ public class Cutout {
     private double cost;
 
     @OneToOne(mappedBy = "cutout")
-    @JsonBackReference
-    private Product product;
+//    @JsonBackReference
+    @JsonIgnore
+    private Order order;
 }

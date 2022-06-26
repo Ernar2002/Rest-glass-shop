@@ -5,9 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "edge_treatment")
@@ -28,6 +25,7 @@ public class EdgeTreatment {
     private double cost;
 
     @OneToOne(mappedBy = "edgeTreatment")
-    @JsonBackReference
-    private Product product;
+//    @JsonBackReference
+    @JsonIgnore
+    private Order order;
 }
