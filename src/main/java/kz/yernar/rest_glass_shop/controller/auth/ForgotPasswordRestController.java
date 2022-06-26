@@ -4,6 +4,7 @@ import kz.yernar.rest_glass_shop.domain.User;
 import kz.yernar.rest_glass_shop.service.EmailSenderService;
 import kz.yernar.rest_glass_shop.service.UserService;
 import kz.yernar.rest_glass_shop.utils.request.ResetPasswordRequest;
+import kz.yernar.rest_glass_shop.utils.response.DefaultResponse;
 import kz.yernar.rest_glass_shop.utils.response.MessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -48,7 +49,7 @@ public class ForgotPasswordRestController {
         }
     }
 
-    @GetMapping("/change-password")
+    @GetMapping("/reset-password")
     public ResponseEntity<?> showChangePasswordPage(@RequestBody ResetPasswordRequest request) {
         User user = userService.getByResetPasswordToken(request.getToken());
         if(user != null) {
@@ -56,6 +57,17 @@ public class ForgotPasswordRestController {
             return ResponseEntity.ok(new MessageResponse("Password updated"));
         } else {
             return ResponseEntity.badRequest().body(new MessageResponse("User not found"));
+        }
+    }
+
+    @GetMapping("/change-password")
+    public DefaultResponse<String> changePassword(@RequestParam("token") String token, @RequestParam("password") String password) {
+        User user = userService.getByResetPasswordToken(token);
+        if(user != null) {
+            userService.updatePassword(user, password);
+            return new DefaultResponse<>(false, "Password updated", null);
+        } else {
+            return new DefaultResponse<>(true, "Incorrect token", null);
         }
     }
 }
